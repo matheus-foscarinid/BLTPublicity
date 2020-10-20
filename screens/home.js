@@ -6,15 +6,13 @@ import { DeviceEventEmitter } from 'react-native';
 import Beacons from 'react-native-beacons-manager';
 
 Beacons.detectIBeacons()
+
 //ContextCompat.checkSelfPermission(BLUETOOTH)
 
 export default function Home({ navigation }) {
     
-    const [reviews, setReviews] = useState([
-        //{ title: 'Promoção Americanas', body: 'Lorem ipsum', key: '1', imagem: require('../assets/images/americanas.png')},
-        //{ title: 'Promoção Renner', body: 'Lorem ipsum', key: '2', imagem: require('../assets/images/renner.png')},
-        //{ title: 'Promoção C&A', body: 'Lorem ipsum', key: '3', imagem: require('../assets/images/cea.png')},
-    ]);
+    const [reviews, setReviews] = useState([]);
+    const [message, setMessage] = useState(" ");
     const [uuid, setUuid] = useState({});
     const [dados, setDados] = useState([{}]);
     const [dist, setDist] = useState(0);
@@ -28,6 +26,12 @@ export default function Home({ navigation }) {
           console.log(`Beacons ranging not started, error: ${error}`)
         }
     }
+
+    const RemoveReview = (position) =>{
+      const newReviews = reviews;
+      newReviews.splice(position, 1);
+      setReviews(newReviews);
+    };
 
     async function rebeaStop(){
       try {
@@ -43,8 +47,10 @@ export default function Home({ navigation }) {
         setDeltatdist(0)
     }
 
-    useEffect(() => {
+    
 
+    useEffect(() => {
+        setTimeout(() => {  rebea()}, 5000);
         DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
           
        
@@ -60,43 +66,72 @@ export default function Home({ navigation }) {
           setTimeout(() => {  setUuid(codigos)}, 1000);
           //console.log(dados);
         }
+        else{
+          setTimeout(() => {  setUuid({})}, 1000);
+        }
       })
     
   
 
     },[]);
 
-    useEffect(() => {
+    //"0bf5cbfc-3677-49bf-bf98-a9a867848e70"
+    //{ title: 'Promoção Americanas', body: 'Lorem ipsum', key: '1', imagem: require('../assets/images/americanas.png')}
+    function saveToCards(beaconId, card, key) {
+
+      let verific = 0;
+      let teste = 0;
 
       if(uuid.length > 0){
         for (let index = 0; index < uuid.length; index++) {
-          if(uuid[index] == "0bf5cbfc-3677-49bf-bf98-a9a867848e70"){
-            setReviews([{ title: 'Promoção Americanas', body: 'Lorem ipsum', key: '1', imagem: require('../assets/images/americanas.png')}])
+          if(uuid[index] == beaconId){
+            
+            for (let i = 0; i < reviews.length; i++) {
+              
+              if (reviews[i].key == key) {
+                teste = 1;
+                verific = 1;
+              }
+            }
+          
+            if(teste == 0){
+              setReviews([...reviews, card])
+              verific = 1;
+            }
+            
           }
+
         }
-        //console.log(uuid[0]);
-        //console.log(reviews);
+        
       }
-  
-  
+
+      if(verific == 0 && reviews.length > 0){   
+        
+        for (let index = 0; index < reviews.length; index++) {
+          if(reviews[index].key == key){
+            RemoveReview(index);
+          }
+          
+        }
+      }
+      if( reviews.length == 0){
+        setMessage("Nenhuma Promoção Detectada, continue Procurando!");
+      }else{
+        setMessage(" ");
+      }
+
+    }
+
+    useEffect(() => {
+
+      saveToCards("0bf5cbfc-3677-49bf-bf98-a9a867848e70", { title: 'Promoção Americanas', body: 'Lorem ipsum', key: '1', imagem: require('../assets/images/americanas.png'), promoImg: require('../assets/images/desconto.jpg')}, '1');
+      saveToCards("0a7502f9-4427-4cee-9f61-d11d250bbbe9", { title: 'Promoção Renner', body: 'Lorem ipsum', key: '2', imagem: require('../assets/images/renner.png'), promoImg: require('../assets/images/desconto.jpg')}, '2');
+      saveToCards("851b190e-5920-43ef-8d17-35c488d96c56", { title: 'Promoção C&A', body: 'Lorem ipsum', key: '3', imagem: require('../assets/images/cea.png'), promoImg: require('../assets/images/desconto.jpg')}, '3');
+      
 
   },[uuid]);
 
-      
-  
-  
-      
-      dados.map(Element=>
-        {
-      
-       if (((Element.distance-dist)>0.01)||((dist-Element.distance)>0.01)){
-          
-          setTimeout(() => {  setDist(Element.distance)}, 1000);
-          
-          
-      }
-        
-      });
+
 
       
       
@@ -108,29 +143,8 @@ export default function Home({ navigation }) {
         <View style={globalStyles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#111"/>
 
-            <View style={globalStyles.container}>
-                <View style = {globalStyles.container}>
-                    <Button
-                    title = "Connect"
-                    onPress = {rebea}
-                    />
-                </View>
-
-                <View style = {globalStyles.container}>      
-                    <Button
-                    title = "Stop"
-                    onPress = {rebeaStop}
-                    />
-                </View>
-                
-                <View style = {globalStyles.container}>
-                    <Text>
-                    Distância: {dist.toFixed(2)}
-                    
-                    </Text>
-                </View>
-            </View>
-            
+                <Text style={globalStyles.alertText}>{message}</Text>
+              
             <FlatList
                 data={reviews}
                 renderItem={({ item }) =>(
@@ -157,49 +171,6 @@ export default function Home({ navigation }) {
         </View>
     )
 }
-
-// Tells the library to detect iBeacons
-
-
-  function App() {
-
-  
-
-
- 
-
-
-
-
-
-
-
-
-  return (
-    <View style={styles.container}>
-      <View style = {styles.container}>
-        <Button
-          title = "Connect"
-          onPress = {rebea}
-        />
-      </View>
-
-      <View style = {styles.container}>      
-        <Button
-          title = "Zerar"
-          onPress = {zera}
-        />
-      </View>
-      
-      <View style = {styles.container}>
-          <Text>
-          Distância: {dist.toFixed(2)}m
-          </Text>
-      </View>
-    </View>
-  );
-}
-  
 
 const styles = StyleSheet.create({
   container: {

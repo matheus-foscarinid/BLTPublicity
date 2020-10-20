@@ -20,6 +20,13 @@ export const globalStyles = StyleSheet.create({
         color: '#fff',
         textAlign: "center",
     },
+    alertText:{
+        fontFamily: 'normal-regular',
+        fontSize: 18,
+        color: '#fff',
+        textAlign: "center",
+        marginTop: 50,
+    },
     normalTextJustif:{
         fontFamily: 'normal-regular',
         fontSize: 15,

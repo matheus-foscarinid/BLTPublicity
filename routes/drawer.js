@@ -5,7 +5,6 @@ import { StyleSheet, View, Text, Image, Linking, TouchableOpacity } from "react-
 
 import aboutNavigator from './aboutStack';
 import homeNavigator from './homeStack';
-import configsNavigator from './configsStack';
 
 const MyTheme = {
     dark: false,
@@ -34,7 +33,7 @@ export default function drawerNavigator() {
             >
                 <Drawer.Screen name="Home" component={homeNavigator} />
                 <Drawer.Screen name="Sobre" component={aboutNavigator} />
-                <Drawer.Screen name="Configurações" component={configsNavigator} />
+               
             </Drawer.Navigator>
         </NavigationContainer>
     )
@@ -55,19 +54,19 @@ function CustomDrawerContent(props) {
 
         <View style={styles.footer}>
             <View style={styles.imagesView}>
-                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('https://google.com') }>
+                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('https://github.com/Foscariny/BLTPublicity') }>
                     <Image
                         source={require('../assets/images/github.png')}
                         style={{ width: 55, height: 55 }}
                     />
                 </TouchableOpacity>   
-                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('https://google.com') }>
+                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('https://www.instagram.com') }>
                     <Image
                         source={require('../assets/images/instagram.png')}
                         style={{ width: 55, height: 55 }}
                     />
                 </TouchableOpacity> 
-                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('https://google.com') }>
+                <TouchableOpacity style={styles.images} accessibilityRole='link'onPress={ ()=> Linking.openURL('mailto:adriel-muller@educar.rs.gov.br') }>
                     <Image
                         source={require('../assets/images/email.png')}
                         style={{ width: 55, height: 55 }}
